@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>音乐收藏展览馆</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Microsoft YaHei", "PingFang SC", "Segoe UI", Roboto, sans-serif;
+        background-color: #eef5ea;
+        line-height: 1.5;
+        color: #1e2a1f;
+      }
+
+      /* 导航栏 */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(115deg, #2e7d32 0%, #1b5e20 100%);
+        padding: 14px 0;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        z-index: 1000;
+      }
+
+      .nav-container {
+        width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 0 20px;
+      }
+
+      .logo {
+        font-size: 26px;
+        color: white;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo::before {
+        content: "🎵";
+        font-size: 28px;
+      }
+
+      .nav-menu {
+        list-style: none;
+        display: flex;
+        gap: 28px;
+      }
+
+      .nav-menu a {
+        color: #f9f7e8;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        transition: 0.2s;
+        padding: 6px 0;
+        cursor: pointer;
+      }
+
+      .nav-menu a:hover {
+        color: #c8e6c9;
+        border-bottom: 2px solid #ffecb3;
+      }
+
+      /* 横幅 */
+      .banner {
+        margin-top: 72px;
+        height: 280px;
+        background:
+          linear-gradient(
+            125deg,
+            rgba(46, 125, 50, 0.75),
+            rgba(27, 94, 32, 0.7)
+          ),
+          url("banner.jpg") center center / cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #fff;
+        background-blend-mode: overlay;
+      }
+
+      .banner-content h1 {
+        font-size: 42px;
+        margin-bottom: 8px;
+      }
+
+      /* 主体容器 */
+      .container {
+        width: 1200px;
+        margin: 48px auto;
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      /* 侧边栏 */
+      .sidebar {
+        flex: 0 0 280px;
+        background: #ffffff;
+        border-radius: 28px;
+        padding: 24px 18px;
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.05);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .user-card {
+        text-align: center;
+        border-bottom: 2px solid #e0f2e0;
+        padding-bottom: 22px;
+        margin-bottom: 20px;
+      }
+
+      .avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #66bb6a, #2e7d32);
+        margin: 0 auto 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        box-shadow: 0 8px 18px rgba(46, 125, 50, 0.3);
+      }
+
+      .side-menu {
+        list-style: none;
+      }
+
+      .side-menu li {
+        padding: 10px 14px;
+        margin: 6px 0;
+        border-radius: 40px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+      }
+
+      .side-menu li:hover {
+        background-color: #e8f5e9;
+        color: #2b5e2b;
+        transform: translateX(4px);
+      }
+
+      .side-menu li.active {
+        background: #2e7d32;
+        color: white;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+      }
+
+      /* 主内容区 */
+      .main-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .section-title {
+        font-size: 26px;
+        margin-bottom: 22px;
+        padding-left: 16px;
+        border-left: 5px solid #4caf50;
+        font-weight: 600;
+      }
+
+      /* 网格卡片 + 悬停放大阴影 */
+      .music-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 28px;
+      }
+
+      .music-card {
+        background: #ffffff;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 12px 22px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        cursor: pointer;
+      }
+
+      /* 悬停放大+阴影增强 */
+      .music-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 22px 34px rgba(0, 0, 0, 0.15);
+      }
+
+      .album-cover {
+        height: 260px;
+        background: #d9eed9;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .album-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+      }
+
+      .music-card:hover .album-cover img {
+        transform: scale(1.05);
+      }
+
+      .play-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+
+      .music-card:hover .play-overlay {
+        opacity: 1;
+      }
+
+      .play-btn {
+        width: 56px;
+        height: 56px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: #2e7d32;
+      }
+
+      .album-info {
+        padding: 16px;
+      }
+
+      .album-info h4 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .artist {
+        color: #5a6e5a;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        margin-top: 6px;
+      }
+
+      .tag {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .tag.western {
+        background: #e3f2fd;
+        color: #0a5e8a;
+      }
+      .tag.kpop {
+        background: #fce4ec;
+        color: #b52e5e;
+      }
+      .tag.chinese {
+        background: #fff4e0;
+        color: #b45f1b;
+      }
+
+      .play-count {
+        margin-top: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #3c873a;
+      }
+
+      /* 列表视图通用 */
+      .list-view {
+        display: none;
+        background: white;
+        border-radius: 32px;
+        padding: 8px 0;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      }
+
+      .list-view.active {
+        display: block;
+      }
+
+      .list-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 18px;
+        border-bottom: 1px solid #ecf3e8;
+        transition: 0.2s;
+        cursor: pointer;
+        gap: 12px;
+      }
+
+      .list-item:hover {
+        background: #f9fcf7;
+        transform: scale(1.002);
+      }
+
+      .list-number {
+        width: 32px;
+        font-weight: 700;
+        color: #789977;
+      }
+
+      .list-cover {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #e2f0df;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .list-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .list-info {
+        flex: 1;
+      }
+
+      .list-info h4 {
+        font-size: 15px;
+        margin-bottom: 3px;
+      }
+
+      .list-tag {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 40px;
+        font-size: 10px;
+        font-weight: 500;
+        margin-top: 4px;
+      }
+
+      .list-tag.western {
+        background: #e3f2fd;
+        color: #0a5e8a;
+      }
+      .list-tag.kpop {
+        background: #fce4ec;
+        color: #b52e5e;
+      }
+      .list-tag.chinese {
+        background: #fff4e0;
+        color: #b45f1b;
+      }
+
+      .list-plays {
+        text-align: right;
+        margin-right: 10px;
+      }
+
+      .list-plays .count {
+        font-size: 17px;
+        font-weight: 800;
+        color: #2e7d32;
+      }
+
+      .list-play {
+        width: 36px;
+        height: 36px;
+        background: #eef5e9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #2e7d32;
+        font-size: 16px;
+      }
+
+      /* 统计卡片 */
+      .stats-overview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        flex: 1;
+        min-width: 120px;
+        background: white;
+        padding: 20px 10px;
+        border-radius: 28px;
+        text-align: center;
+        border-top: 4px solid #4caf50;
+      }
+      .stat-card h3 {
+        font-size: 32px;
+        font-weight: 800;
+      }
+
+      /* 底部播放器 + 频谱动画画布 */
+      .player-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #ffffffea;
+        backdrop-filter: blur(12px);
+        border-top: 1px solid #d9e3d4;
+        padding: 10px 24px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        z-index: 1200;
+      }
+
+      .now-playing {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 240px;
+        position: relative;
+      }
+
+      /* 频谱动画容器 (封面周围) */
+      .spectrum-container {
+        position: relative;
+        width: 60px;
+        height: 60px;
+      }
+      .now-cover {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: #eef1e7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      canvas#spectrumCanvas {
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .now-info h5 {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .player-controls {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .control-btn {
+        width: 40px;
+        height: 40px;
+        background: #f0f4ec;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 18px;
+        transition: 0.2s;
+      }
+      .control-btn.play {
+        background: #4caf50;
+        color: white;
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+      }
+      .progress-bar {
+        width: 260px;
+        height: 5px;
+        background: #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .progress-fill {
+        width: 0%;
+        height: 100%;
+        background: #4caf50;
+        border-radius: 6px;
+      }
+      .volume-area {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .back-to-top {
+        position: fixed;
+        right: 24px;
+        bottom: 100px;
+        width: 46px;
+        height: 46px;
+        background: #2e7d32;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 22px;
+        z-index: 1100;
+      }
+      .footer {
+        background: #1c3e1b;
+        color: #cfd8c5;
+        text-align: center;
+        padding: 28px 20px;
+        margin-top: 50px;
+        margin-bottom: 80px;
+      }
+      @media (max-width: 900px) {
+        .container {
+          width: 95%;
+        }
+        .sidebar {
+          flex: 0 0 250px;
+        }
+        .progress-bar {
+          width: 160px;
+        }
+      }
+      @media (max-width: 700px) {
+        .sidebar {
+          flex: auto;
+          width: 100%;
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="musicPlayer" preload="auto" crossorigin="anonymous"></audio>
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo">声纹故事馆</a>
+        <ul class="nav-menu">
+          <li><a id="navHome">🏠 首页</a></li>
+          <li><a id="navCollection">📚 我的收藏</a></li>
+          <li><a id="navRank">📊 排行榜</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <header class="banner">
+      <div class="banner-content">
+        <h1>🎶 音乐 · 频谱 · 律动 🎶</h1>
+        <p>悬停卡片，聆听旋律，感受光影</p>
+      </div>
+    </header>
+
+    <div class="container">
+      <aside class="sidebar">
+        <div class="user-card">
+          <div class="avatar">🎧</div>
+          <h3>bluebbqq</h3>
+          <span>音乐收藏家</span>
+        </div>
+        <ul class="side-menu">
+          <li class="active" data-view="hot">🔥 热门精选</li>
+          <li data-view="western">🎸 欧美流行</li>
+          <li data-view="kpop">💽 K-Pop</li>
+          <li data-view="chinese">🎋 华语国风</li>
+          <li data-view="stats">📊 聆听年鑑</li>
+        </ul>
+      </aside>
+
+      <main class="main-content">
+        <!-- 首页网格 TOP6 -->
+        <div id="hotGridView" style="display: block">
+          <h2 class="section-title">🔥 热力前六 · 律动之声</h2>
+          <div class="music-grid" id="hotGrid"></div>
+        </div>
+
+        <!-- 随机收藏视图 -->
+        <div id="randomView" style="display: none">
+          <h2 class="section-title">🎲 随机珍藏 · 音乐漫游</h2>
+          <div class="music-grid" id="randomGrid"></div>
+        </div>
+
+        <!-- 完整排行榜视图 -->
+        <div id="fullRankView" style="display: none">
+          <h2 class="section-title">🏆 完整排行榜 · 所有歌曲</h2>
+          <div class="list-view active" id="rankListContainer"></div>
+        </div>
+
+        <!-- 分类列表视图 -->
+        <div class="list-view" id="westernView">
+          <h2 class="section-title">🌎 欧美流行</h2>
+          <div id="westernList"></div>
+        </div>
+        <div class="list-view" id="kpopView">
+          <h2 class="section-title">✨ K-Pop 世代浪潮</h2>
+          <div id="kpopList"></div>
+        </div>
+        <div class="list-view" id="chineseView">
+          <h2 class="section-title">🏮 华语国风 · 诗意留白</h2>
+          <div id="chineseList"></div>
+        </div>
+
+        <!-- 统计视图 -->
+        <div class="list-view" id="statsView">
+          <h2 class="section-title">📈 聆听年鑑</h2>
+          <div class="stats-overview" id="statsOverview"></div>
+          <h3 style="margin: 20px 0 12px 12px">🏆 播放 TOP 10</h3>
+          <div id="topList"></div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <p>🎵</p>
+    </footer>
+
+    <div class="player-bar">
+      <div class="now-playing">
+        <div class="spectrum-container">
+          <div class="now-cover" id="nowCover">
+            <span style="font-size: 28px">🎵</span>
+          </div>
+          <canvas id="spectrumCanvas" width="150" height="150"></canvas>
+        </div>
+        <div class="now-info">
+          <h5 id="nowTitle">未选择歌曲</h5>
+          <p id="nowArtist">点击卡片，频谱绽放</p>
+        </div>
+      </div>
+      <div class="player-controls">
+        <span class="control-btn" id="prevBtn">⏮</span>
+        <span class="control-btn play" id="playBtn">▶</span>
+        <span class="control-btn" id="nextBtn">⏭</span>
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="volume-area">
+        <span>🔊</span
+        ><input
+          type="range"
+          id="volumeSlider"
+          min="0"
+          max="1"
+          step="0.02"
+          value="0.6"
+        />
+      </div>
+    </div>
+    <div
+      class="back-to-top"
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+    >
+      ↑
+    </div>
+
+    <script>
+      // ---------- 歌曲数据 (移除story属性) ----------
+      const fullSongData = [
+        // 华语国风
+        {
+          title: "我知道",
+          artist: "By2",
+          category: "chinese",
+          year: "2009",
+          cover: "covers/wozhidao.jpg",
+          plays: 20,
+          src: "music/wozhidao.mp3",
+        },
+        {
+          title: "金风玉露",
+          artist: "旅行新蜜蜂",
+          category: "chinese",
+          year: "2023",
+          cover: "covers/jinfengyulu.jpg",
+          plays: 19,
+          src: "music/jinfengyulu.mp3",
+        },
+        {
+          title: "咏春",
+          artist: "七朵组合",
+          category: "chinese",
+          year: "2012",
+          cover: "covers/yongchun.jpg",
+          plays: 5,
+          src: "music/咏春.mp3",
+        },
+        {
+          title: "落花情",
+          artist: "七朵组合",
+          category: "chinese",
+          year: "2013",
+          cover: "covers/luohuaqing.jpg",
+          plays: 6,
+          src: "music/落花情.mp3",
+        },
+        {
+          title: "胭脂妆",
+          artist: "树屋女孩",
+          category: "chinese",
+          year: "2017",
+          cover: "covers/yanzhizhuang.jpg",
+          plays: 3,
+          src: "music/胭脂妆.mp3",
+        },
+        // K-Pop
+        {
+          title: "What Is Love (Korean Ver.)",
+          artist: "EXO-K",
+          category: "kpop",
+          year: "2012",
+          cover: "covers/whatislove.jpg",
+          plays: 19,
+          src: "music/whatislove.mp3",
+        },
+        {
+          title: "MEOW",
+          artist: "MEOVV",
+          category: "kpop",
+          year: "2024",
+          cover: "covers/meow.jpg",
+          plays: 19,
+          src: "music/meow.mp3",
+        },
+        {
+          title: "MEEEEEE",
+          artist: "TWICE & NAYEON",
+          category: "kpop",
+          year: "2024",
+          cover: "covers/meeeeee.jpg",
+          plays: 18,
+          src: "music/meeeeee.mp3",
+        },
+        {
+          title: "Sticky",
+          artist: "KISS OF LIFE",
+          category: "kpop",
+          year: "2024",
+          cover: "covers/sticky.jpg",
+          plays: 15,
+          src: "music/Sticky.mp3",
+        },
+        {
+          title: "I'm Pretty",
+          artist: "KATSEYE",
+          category: "kpop",
+          year: "2024",
+          cover: "covers/impretty.jpg",
+          plays: 15,
+          src: "music/I'm Pretty.mp3",
+        },
+        {
+          title: "Diamond",
+          artist: "TRI.BE",
+          category: "kpop",
+          year: "2024",
+          cover: "covers/diamond.jpg",
+          plays: 14,
+          src: "music/Diamond.mp3",
+        },
+        {
+          title: "Baby Don't Cry",
+          artist: "EXO",
+          category: "kpop",
+          year: "2013",
+          cover: "covers/babydontcry.jpg",
+          plays: 14,
+          src: "music/Baby Don't Cry.mp3",
+        },
+        {
+          title: "365",
+          artist: "ONE OR EIGHT",
+          category: "kpop",
+          year: "2025",
+          cover: "covers/365.jpg",
+          plays: 9,
+          src: "music/365.mp3",
+        },
+        {
+          title: "Body to Body",
+          artist: "防弹少年团",
+          category: "kpop",
+          year: "2014",
+          cover: "covers/bodytobody.jpg",
+          plays: 5,
+          src: "music/Body to Body.mp3",
+        },
+        {
+          title: "Darl+Ing",
+          artist: "SEVENTEEN",
+          category: "kpop",
+          year: "2022",
+          cover: "covers/darling.jpg",
+          plays: 4,
+          src: "music/Darl+Ing.mp3",
+        },
+        {
+          title: "Permission to Dance",
+          artist: "防弹少年团",
+          category: "kpop",
+          year: "2021",
+          cover: "covers/permissiontodance.jpg",
+          plays: 4,
+          src: "music/Permission to Dance.mp3",
+        },
+        {
+          title: "How Sweet",
+          artist: "NewJeans",
+          category: "kpop",
+          year: "2024",
+          cover: "covers/howsweet.jpg",
+          plays: 2,
+          src: "music/How Sweet.mp3",
+        },
+        {
+          title: "OMG",
+          artist: "NewJeans",
+          category: "kpop",
+          year: "2023",
+          cover: "covers/omg.jpg",
+          plays: 2,
+          src: "music/OMG.mp3",
+        },
+        // 欧美流行
+        {
+          title: "Dear Lie",
+          artist: "TLC",
+          category: "western",
+          year: "1999",
+          cover: "covers/dearlie.jpg",
+          plays: 16,
+          src: "music/dearlie.mp3",
+        },
+        {
+          title: "What Do You Mean?",
+          artist: "Justin Bieber",
+          category: "western",
+          year: "2015",
+          cover: "covers/whatdoyoumean.jpg",
+          plays: 14,
+          src: "music/What Do You Mean.mp3",
+        },
+        {
+          title: "Close To You",
+          artist: "Gracie Abrams",
+          category: "western",
+          year: "2024",
+          cover: "covers/closetoyou.jpg",
+          plays: 14,
+          src: "music/Close To You.mp3",
+        },
+        {
+          title: "Cruel Summer",
+          artist: "Taylor Swift",
+          category: "western",
+          year: "2019",
+          cover: "covers/cruelsummer.jpg",
+          plays: 13,
+          src: "music/Cruel Summer.mp3",
+        },
+      ];
+
+      const songData = fullSongData;
+      const categoryNames = {
+        western: "欧美流行",
+        kpop: "K-Pop",
+        chinese: "华语国风",
+      };
+
+      // 播放器变量 + 频谱动画
+      let currentIndex = -1;
+      let isPlaying = false;
+      const player = document.getElementById("musicPlayer");
+      let audioCtx = null,
+        analyser = null,
+        sourceNode = null,
+        animationId = null;
+      let currentActiveView = "hot";
+
+      // ---- 频谱初始化 ----
+      function initAudioContext() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        const canvas = document.getElementById("spectrumCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 150;
+        canvas.height = 150;
+        function drawSpectrum() {
+          if (!analyser || !isPlaying) {
+            if (!isPlaying && ctx) {
+              ctx.clearRect(0, 0, 150, 150);
+            }
+            animationId = requestAnimationFrame(drawSpectrum);
+            return;
+          }
+          analyser.getByteFrequencyData(dataArray);
+          ctx.clearRect(0, 0, 150, 150);
+          const centerX = 75,
+            centerY = 75,
+            radius = 58;
+          const barCount = 36;
+          const step = Math.floor(bufferLength / barCount);
+          for (let i = 0; i < barCount; i++) {
+            let freq = dataArray[i * step] || 0;
+            let height = (freq / 255) * 20 + 6;
+            let angle = (i / barCount) * Math.PI * 2;
+            let startX = centerX + (radius - 2) * Math.cos(angle);
+            let startY = centerY + (radius - 2) * Math.sin(angle);
+            let endX = centerX + (radius + height) * Math.cos(angle);
+            let endY = centerY + (radius + height) * Math.sin(angle);
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = `hsl(${120 + i * 5}, 70%, 55%)`;
+            ctx.stroke();
+          }
+          animationId = requestAnimationFrame(drawSpectrum);
+        }
+        drawSpectrum();
+      }
+      function connectAudioToAnalyser() {
+        if (!audioCtx || sourceNode) return;
+        try {
+          sourceNode = audioCtx.createMediaElementSource(player);
+          sourceNode.connect(analyser);
+          analyser.connect(audioCtx.destination);
+        } catch (e) {
+          console.warn("connect error", e);
+        }
+      }
+      function startSpectrum() {
+        if (audioCtx?.state === "suspended") audioCtx.resume();
+      }
+
+      // 播放核心
+      function playSong(index) {
+        if (index < 0 || index >= songData.length) return;
+        if (currentIndex === index && isPlaying) return;
+        currentIndex = index;
+        const song = songData[index];
+        song.plays += 1;
+        refreshCurrentView();
+        document.getElementById("nowTitle").innerText = song.title;
+        document.getElementById("nowArtist").innerHTML = song.artist;
+        const coverDiv = document.getElementById("nowCover");
+        coverDiv.innerHTML = `<img src="${song.cover}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.innerHTML='<span style=\'font-size:28px;\'>🎵</span>'">`;
+        if (song.src) {
+          if (player.src !== song.src) player.src = song.src;
+          if (!audioCtx) initAudioContext();
+          if (!sourceNode) connectAudioToAnalyser();
+          player
+            .play()
+            .then(() => {
+              isPlaying = true;
+              document.getElementById("playBtn").innerHTML = "⏸";
+              startSpectrum();
+            })
+            .catch((e) => console.warn("播放失败", e));
+        } else console.warn("无音频:", song.title);
+      }
+      function togglePlay() {
+        if (currentIndex === -1) {
+          if (songData.length) playSong(0);
+          return;
+        }
+        if (isPlaying) {
+          player.pause();
+          isPlaying = false;
+          document.getElementById("playBtn").innerHTML = "▶";
+        } else {
+          player
+            .play()
+            .then(() => {
+              isPlaying = true;
+              document.getElementById("playBtn").innerHTML = "⏸";
+              startSpectrum();
+            })
+            .catch((e) => console.log(e));
+        }
+      }
+      function prevSong() {
+        if (songData.length)
+          playSong((currentIndex - 1 + songData.length) % songData.length);
+      }
+      function nextSong() {
+        if (songData.length) playSong((currentIndex + 1) % songData.length);
+      }
+      function seek(e) {
+        if (!player.duration) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        player.currentTime = percent * player.duration;
+      }
+      function updateProgress() {
+        if (player.duration)
+          document.getElementById("progressFill").style.width =
+            (player.currentTime / player.duration) * 100 + "%";
+      }
+      player.addEventListener("timeupdate", updateProgress);
+      player.addEventListener("ended", () => nextSong());
+      document
+        .getElementById("volumeSlider")
+        .addEventListener("input", (e) => (player.volume = e.target.value));
+      player.volume = 0.6;
+
+      // 渲染通用方法
+      function getTop6() {
+        return [...songData].sort((a, b) => b.plays - a.plays).slice(0, 6);
+      }
+      function renderHotGrid() {
+        renderGridTo("hotGrid", getTop6());
+      }
+      function renderRandomCollection() {
+        const shuffled = [...songData];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        renderGridTo("randomGrid", shuffled);
+      }
+      function renderFullRank() {
+        const sorted = [...songData].sort((a, b) => b.plays - a.plays);
+        renderListTo("rankListContainer", sorted);
+      }
+      function renderCategoryList(cat) {
+        const filtered = songData.filter((s) => s.category === cat);
+        renderListTo(`${cat}List`, filtered);
+      }
+      function renderStatsAndTop() {
+        const total = songData.reduce((s, c) => s + c.plays, 0);
+        const w = songData
+          .filter((s) => s.category === "western")
+          .reduce((s, c) => s + c.plays, 0);
+        const k = songData
+          .filter((s) => s.category === "kpop")
+          .reduce((s, c) => s + c.plays, 0);
+        const c = songData
+          .filter((s) => s.category === "chinese")
+          .reduce((s, c) => s + c.plays, 0);
+        document.getElementById("statsOverview").innerHTML =
+          `<div class="stat-card"><h3>${total}</h3><p>总播放</p></div><div class="stat-card"><h3>${w}</h3><p>欧美流行</p></div><div class="stat-card"><h3>${k}</h3><p>K-Pop</p></div><div class="stat-card"><h3>${c}</h3><p>华语国风</p></div>`;
+        const top10 = [...songData]
+          .sort((a, b) => b.plays - a.plays)
+          .slice(0, 10);
+        renderListTo("topList", top10);
+      }
+      function renderGridTo(containerId, songs) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = songs
+          .map((song, idx) => {
+            const globalIdx = songData.indexOf(song);
+            return `<div class="music-card" onclick="playSong(${globalIdx})"><div class="album-cover"><img src="${song.cover}" onerror="this.parentNode.innerHTML+='<span class=\'cover-placeholder\'>🎼</span>';this.style.display='none'"><div class="play-overlay"><div class="play-btn">▶</div></div></div><div class="album-info"><h4>${escapeHtml(song.title)}</h4><p class="artist">${escapeHtml(song.artist)}</p><div class="tags"><span class="tag ${song.category}">${categoryNames[song.category]}</span><span class="date">${song.year}</span></div><div class="play-count">🎧 ${song.plays} 次</div></div></div>`;
+          })
+          .join("");
+      }
+      function renderListTo(containerId, songs) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = songs
+          .map((song, idx) => {
+            const globalIdx = songData.indexOf(song);
+            return `<div class="list-item" onclick="playSong(${globalIdx})"><div class="list-number">${idx + 1}</div><div class="list-cover"><img src="${song.cover}" onerror="this.parentNode.innerHTML='<span>🎵</span>';"></div><div class="list-info"><h4>${escapeHtml(song.title)}</h4><p>${escapeHtml(song.artist)} · ${song.year}</p><span class="list-tag ${song.category}">${categoryNames[song.category]}</span></div><div class="list-plays"><div class="count">${song.plays}</div><div class="label">次</div></div><div class="list-play">▶</div></div>`;
+          })
+          .join("");
+      }
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+      function refreshCurrentView() {
+        if (currentActiveView === "hot") renderHotGrid();
+        else if (currentActiveView === "random") renderRandomCollection();
+        else if (currentActiveView === "rank") renderFullRank();
+        else if (
+          currentActiveView === "western" ||
+          currentActiveView === "kpop" ||
+          currentActiveView === "chinese"
+        )
+          renderCategoryList(currentActiveView);
+        else if (currentActiveView === "stats") renderStatsAndTop();
+      }
+      // 视图切换
+      function switchToView(viewId, activateLi = null) {
+        document
+          .querySelectorAll(".side-menu li")
+          .forEach((li) => li.classList.remove("active"));
+        if (activateLi) activateLi.classList.add("active");
+        document.getElementById("hotGridView").style.display = "none";
+        document.getElementById("randomView").style.display = "none";
+        document.getElementById("fullRankView").style.display = "none";
+        document
+          .querySelectorAll(".list-view")
+          .forEach((el) => el.classList.remove("active"));
+        if (viewId === "hot") {
+          document.getElementById("hotGridView").style.display = "block";
+          renderHotGrid();
+          currentActiveView = "hot";
+        } else if (viewId === "random") {
+          document.getElementById("randomView").style.display = "block";
+          renderRandomCollection();
+          currentActiveView = "random";
+        } else if (viewId === "rank") {
+          document.getElementById("fullRankView").style.display = "block";
+          // 关键修复：重新为排行榜容器添加 active 类
+          document.getElementById("rankListContainer").classList.add("active");
+          renderFullRank();
+          currentActiveView = "rank";
+        } else if (
+          viewId === "western" ||
+          viewId === "kpop" ||
+          viewId === "chinese"
+        ) {
+          const target = document.getElementById(viewId + "View");
+          if (target) target.classList.add("active");
+          renderCategoryList(viewId);
+          currentActiveView = viewId;
+        } else if (viewId === "stats") {
+          document.getElementById("statsView").classList.add("active");
+          renderStatsAndTop();
+          currentActiveView = "stats";
+        }
+      }
+      // 绑定事件
+      document.querySelectorAll(".side-menu li").forEach((li) => {
+        li.addEventListener("click", function () {
+          const v = this.getAttribute("data-view");
+          if (v) switchToView(v, this);
+        });
+      });
+      document.getElementById("navHome").addEventListener("click", (e) => {
+        e.preventDefault();
+        switchToView(
+          "hot",
+          document.querySelector(".side-menu li[data-view='hot']"),
+        );
+      });
+      document
+        .getElementById("navCollection")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          switchToView("random");
+          document
+            .querySelectorAll(".side-menu li")
+            .forEach((l) => l.classList.remove("active"));
+        });
+      document.getElementById("navRank").addEventListener("click", (e) => {
+        e.preventDefault();
+        switchToView("rank");
+        document
+          .querySelectorAll(".side-menu li")
+          .forEach((l) => l.classList.remove("active"));
+      });
+      document.getElementById("playBtn").addEventListener("click", togglePlay);
+      document.getElementById("prevBtn").addEventListener("click", prevSong);
+      document.getElementById("nextBtn").addEventListener("click", nextSong);
+      document.getElementById("progressBar").addEventListener("click", seek);
+      window.initAudioContext = initAudioContext;
+      // 首次启动
+      renderHotGrid();
+      renderStatsAndTop();
+      renderCategoryList("western");
+      renderCategoryList("kpop");
+      renderCategoryList("chinese");
+      switchToView(
+        "hot",
+        document.querySelector(".side-menu li[data-view='hot']"),
+      );
+    </script>
+  </body>
+</html>
